@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/providers/orders.dart';
 import 'package:shopapp/screens/cart_page.dart';
+import 'package:shopapp/screens/orders_page.dart';
 
 import 'providers/cart.dart';
 import 'providers/products_data.dart';
@@ -17,12 +19,14 @@ class Home extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ProductData()),
         ChangeNotifierProvider(create: (context) => Cart()),
+        ChangeNotifierProvider(create: ((context) => Orders()),),
       ],
       child: MaterialApp(
         theme: ThemeData(
           primarySwatch: Colors.green,
           accentColor: Colors.amberAccent,
           fontFamily: 'Lato',
+          backgroundColor: Colors.white,
         ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -31,7 +35,8 @@ class Home extends StatelessWidget {
         routes: {
           ProductsPage.route: (context) => ProductsPage(),
           ProductDetails.route: (context) => ProductDetails(),
-          CartPage.route: (context) => CartPage()
+          CartPage.route: (context) => CartPage(),
+          OrdersPage.route:(context) => OrdersPage(),
         },
       ),
     );

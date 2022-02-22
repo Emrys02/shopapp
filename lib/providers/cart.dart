@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 class CartItem with ChangeNotifier {
   final String id;
   final String title;
-  final double quantity;
+  double quantity = 1.0;
   final double price;
 
   CartItem({
@@ -27,6 +27,22 @@ class Cart with ChangeNotifier {
 
   void clearCart() {
     _items.clear();
+    notifyListeners();
+  }
+
+  void removeItem(String itemId) {
+    if (_items[itemId]!.quantity > 1) {
+      _items.update(
+          itemId,
+          (value) => CartItem(
+              id: value.id,
+              price: value.price,
+              quantity: value.quantity - 1,
+              title: value.title));
+    }
+    else if(_items[itemId]!.quantity == 1){
+      _items.remove(itemId);
+    }
     notifyListeners();
   }
 

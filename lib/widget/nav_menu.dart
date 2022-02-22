@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/providers/cart.dart';
+import 'package:shopapp/screens/orders_page.dart';
 
 import '../providers/filter_options.dart';
 import '../screens/cart_page.dart';
@@ -32,16 +33,19 @@ class _NavMenuState extends State<NavMenu> {
             if (value == FilterOptions.cart) {
               Navigator.of(context).pushNamed(CartPage.route);
             }
+            if (value == FilterOptions.checkout) {
+              Navigator.of(context).pushNamed(OrdersPage.route);
+            }
           });
         },
         itemBuilder: ((context) => [
               const PopupMenuItem(
                 child: ListTile(
                   leading: Icon(
-                    Icons.home,
+                    Icons.shopping_bag_rounded,
                     color: Colors.blue,
                   ),
-                  title: Text('Home'),
+                  title: Text('Shop'),
                 ),
                 value: FilterOptions.home,
               ),
@@ -58,9 +62,9 @@ class _NavMenuState extends State<NavMenu> {
               PopupMenuItem(
                 child: ListTile(
                   leading: const Icon(
-                        Icons.shopping_cart_rounded,
-                        color: Colors.grey,
-                      ),
+                    Icons.shopping_cart_rounded,
+                    color: Colors.grey,
+                  ),
                   title: const Text('My Cart'),
                   trailing: Text(
                     stuff.itemCount.toString(),
@@ -69,7 +73,17 @@ class _NavMenuState extends State<NavMenu> {
                 ),
                 value: FilterOptions.cart,
               ),
+
               const PopupMenuItem(
+                child: ListTile(
+                  leading: Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Colors.black87,
+                  ),
+                  title: Text('Checkout'),
+                ),
+                value: FilterOptions.checkout,
+              ),const PopupMenuItem(
                 child: ListTile(
                   leading: Icon(
                     Icons.account_circle_outlined,

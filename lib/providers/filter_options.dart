@@ -3,4 +3,5 @@ enum FilterOptions {
   home,
   favourites,
   cart,
+  checkout,
 }

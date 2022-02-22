@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopapp/providers/orders.dart';
 import 'package:shopapp/providers/product.dart';
 import 'package:shopapp/widget/nav_menu.dart';
+
+import '../providers/cart.dart';
 
 class ProductDetails extends StatelessWidget {
   static const route = 'productdetails';
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<Cart>(context);
+    final order = Provider.of<Orders>(context);
+    var deviceProperties = MediaQuery.of(context);
     Product _selectedItem =
         ModalRoute.of(context)?.settings.arguments as Product;
 
@@ -16,42 +23,68 @@ class ProductDetails extends StatelessWidget {
     );
     return Scaffold(
         appBar: appbar,
-        body: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: FadeInImage.assetNetwork(
-                  placeholder: 'images/loading.gif',
-                  image: _selectedItem.imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity),
-            ),
-            SizedBox(
-              height: (MediaQuery.of(context).size.height -
-                      appbar.preferredSize.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.05,
-            ),
-            Text("\$${_selectedItem.price}"),
-            SizedBox(
-              height: (MediaQuery.of(context).size.height -
-                      appbar.preferredSize.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.05,
-            ),
-            Container(
-                width: double.infinity,
-                height: (MediaQuery.of(context).size.height -
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Card(
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: FadeInImage.assetNetwork(
+                      placeholder: 'images/loading.gif',
+                      image: _selectedItem.imageUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity),
+                ),
+              ),
+              SizedBox(
+                height: (deviceProperties.size.height -
                         appbar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.1,
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                child: Text(
-                  _selectedItem.description,
-                  textAlign: TextAlign.center,
-                  softWrap: true,
-                ))
-          ],
+                        deviceProperties.padding.top) *
+                    0.05,
+              ),
+              Card(
+                child: Column(
+                  children: [
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.add_shopping_cart_rounded),
+                      label: const Text("Add To Cart"),
+                      onPressed: () {
+                        cart.addItem(_selectedItem.id, _selectedItem.price,
+                            _selectedItem.title);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text("Successfully Added To Cart"),
+                          action: SnackBarAction(
+                              label: "Undo",
+                              onPressed: () =>
+                                  cart.removeItem(_selectedItem.id)),
+                        ));
+                      },
+                    ),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: const Text("Buy Now"),
+                      onPressed: () {
+                        order.addOrder([
+                          CartItem(
+                              id: _selectedItem.id,
+                              price: _selectedItem.price,
+                              quantity: 1,
+                              title: _selectedItem.title)
+                        ], _selectedItem.price);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text("Successfully CheckedOut Item"),
+                          action: SnackBarAction(
+                              label: "Undo",
+                              onPressed: () => order.removeLastOrder()),
+                        ));
+                      },
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ));
   }
 }
