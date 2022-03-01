@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/providers/cart.dart';
 import 'package:shopapp/screens/orders_page.dart';
+import 'package:shopapp/screens/profile.dart';
 
-import '../providers/filter_options.dart';
+import '../providers/global_variables.dart';
 import '../screens/cart_page.dart';
 import '../screens/products_page.dart';
 
@@ -31,10 +32,13 @@ class _NavMenuState extends State<NavMenu> {
                   .pushReplacementNamed(ProductsPage.route, arguments: false);
             }
             if (value == FilterOptions.cart) {
-              Navigator.of(context).pushNamed(CartPage.route);
+              Navigator.of(context).pushReplacementNamed(CartPage.route);
             }
             if (value == FilterOptions.checkout) {
-              Navigator.of(context).pushNamed(OrdersPage.route);
+              Navigator.of(context).pushReplacementNamed(OrdersPage.route);
+            }
+            if (value == FilterOptions.account){
+              Navigator.of(context).pushReplacementNamed(Profile.route);
             }
           });
         },

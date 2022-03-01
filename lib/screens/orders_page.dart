@@ -16,7 +16,6 @@ class _OrdersPageState extends State<OrdersPage> {
   toggleShowMore() {
     setState(() {
       widget.showMore = !widget.showMore;
-      print(widget.showMore);
     });
     return widget.showMore;
   }
@@ -24,7 +23,6 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build(BuildContext context) {
     Orders ordersData = Provider.of<Orders>(context);
-    print(widget.showMore);
     return Scaffold(
         appBar: AppBar(
           title: const Text("Orders"),
@@ -45,13 +43,13 @@ class _OrdersPageState extends State<OrdersPage> {
                               .format(ordersData.orders[i1].time)),
                           trailing: IconButton(
                             icon: !widget.showMore
-                                ? Icon(Icons.expand_more_rounded)
-                                : Icon(Icons.expand_less_rounded),
+                                ? const Icon(Icons.expand_more_rounded)
+                                : const Icon(Icons.expand_less_rounded),
                             onPressed: () => toggleShowMore(),
                           ),
                         ),
                         if (widget.showMore)
-                          Container(height: 100, child: ListView.builder(itemCount: ordersData.orders[i1].products.length,
+                          SizedBox(height: 100, child: ListView.builder(itemCount: ordersData.orders[i1].products.length,
                             itemBuilder: (context, index) {
                               return Text(
                                   ordersData.orders[i1].products[index].title);

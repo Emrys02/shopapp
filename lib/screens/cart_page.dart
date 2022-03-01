@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopapp/providers/cart.dart';
-import 'package:shopapp/providers/orders.dart';
-import 'package:shopapp/screens/product_details.dart';
 
+
+import '../providers/cart.dart';
+import '../providers/global_variables.dart';
+import '../providers/orders.dart';
 import '../providers/products_data.dart';
 import '../widget/nav_menu.dart';
+import 'product_details.dart';
 
 class CartPage extends StatelessWidget {
   final bool showFavourites = false;
@@ -67,7 +69,7 @@ class CartPage extends StatelessWidget {
                 ))
               : Expanded(
                   child: Center(
-                    child: Image.asset("images/empty.gif"),
+                    child: Image.asset(Global.emptyImage),
                   ),
                 ),
           const SizedBox(height: 15),
