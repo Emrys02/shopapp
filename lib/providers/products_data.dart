@@ -79,36 +79,66 @@ class ProductData with ChangeNotifier {
   }
 
   void removeProduct(Product item) {
-    _items.removeWhere((element) =>
-        element.title == item.title && element.price == item.price);
-    notifyListeners();
+    var url = Uri.parse(
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/products/${item.id}.json");
+    try {
+      print(item.id);
+      http.delete(url);
+    } catch (error) {
+      print(error);
+      rethrow;
+    } finally {
+      _items.removeWhere((element) =>
+          element.title == item.title && element.price == item.price);
+      notifyListeners();
+    }
   }
 
-  void editProduct(Product existingItem, Product newItem) {
-    var pos = _items.indexWhere((element) =>
-        element.title == existingItem.title &&
-        element.price == existingItem.price);
-    _items.removeAt(pos);
-    _items.insert(pos, newItem);
-    notifyListeners();
+  Future<void> editProduct(Product existingItem, Product newItem) async {
+    var url = Uri.parse(
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/products/${existingItem.id}.json");
+    try {
+      await http.patch(url,
+          body: json.encode({
+            'title': newItem.title,
+            'description': newItem.description,
+            'imageUrl': newItem.imageUrl,
+            'price': newItem.price
+          }));
+    } catch (error) {
+      print(error);
+      rethrow;
+    } finally {
+      var pos = _items.indexWhere((element) =>
+          element.title == existingItem.title &&
+          element.price == existingItem.price);
+      _items.removeAt(pos);
+      _items.insert(pos, newItem);
+      notifyListeners();
+    }
   }
 
-  void retrieveProduct() async {
+  Future<void> retrieveProduct() async {
     var url = Uri.parse(
         "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/products.json");
     try {
       final out = await http.get(url);
       final data = json.decode(out.body);
+      _items.clear();
       data.forEach((id, value) {
         _items.add(Product(
-            id: id,
-            description: value['description'],
-            imageUrl: value['imageUrl'],
-            price: value['price'],
-            title: value['title'],
-            isFavourite: value['isFavourite']));
+          id: id,
+          description: value['description'],
+          imageUrl: value['imageUrl'],
+          price: value['price'],
+          title: value['title'],
+          isFavourite: value['isFavourite'],
+        ));
       });
       notifyListeners();
-    } catch (_) {}
+    } catch (error) {
+      print(error);
+      rethrow;
+    }
   }
 }

@@ -7,13 +7,27 @@ import '../screens/profile.dart';
 import 'create_account.dart';
 
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
-
   @override
   _LoginState createState() => _LoginState();
+  bool retrieve = false;
 }
 
 class _LoginState extends State<Login> {
+  @override
+  void didChangeDependencies() async {
+    if (!widget.retrieve) {
+      try {
+        await Provider.of<AcctDetails>(context, listen: false).retrieveUsers();
+      } catch (error) {
+        print(error);
+      }finally{
+        widget.retrieve = true;
+        print(Provider.of<AcctDetails>(context, listen: false).accounts());
+      }
+    }
+    super.didChangeDependencies();
+  }
+
   final passwordFocusNode = FocusNode();
   final formData = GlobalKey<FormState>();
   var acctdetails = Acct(
@@ -57,7 +71,8 @@ class _LoginState extends State<Login> {
               left: 15,
               bottom: 10,
             ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
         Navigator.of(context).pushReplacementNamed(Profile.route);
@@ -110,7 +125,7 @@ class _LoginState extends State<Login> {
                     },
                     onSaved: (value) {
                       acctdetails = Acct(
-                        email: "",
+                          email: "",
                           firstName: "",
                           lastName: "",
                           gender: "",
@@ -143,7 +158,7 @@ class _LoginState extends State<Login> {
                     onFieldSubmitted: (_) => save(),
                     onSaved: (value) {
                       acctdetails = Acct(
-                        email: "",
+                          email: "",
                           firstName: "",
                           lastName: "",
                           id: acctdetails.id,

@@ -25,9 +25,12 @@ class UserProducts extends StatelessWidget {
           NavMenu()
         ],
       ),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) => UserProductItems(products[index], provider.removeProduct),
+      body: RefreshIndicator(
+        onRefresh: () => Provider.of<ProductData>(context, listen: false).retrieveProduct(),
+        child: ListView.builder(
+          itemCount: products.length,
+          itemBuilder: (context, index) => UserProductItems(products[index], provider.removeProduct),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add_rounded),

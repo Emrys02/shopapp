@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/screens/available_user_accounts.dart';
+import 'package:shopapp/screens/products_page.dart';
 
 import '../providers/accounts.dart';
 import '../widget/login.dart';
@@ -12,7 +13,7 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var details = Provider.of<AcctDetails>(context);
+    var details = Provider.of<AcctDetails>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -21,21 +22,32 @@ class Profile extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: !details.loginStatus
-          ? const Login()
+          ? Login()
           : Column(
               children: [
-                TextButton(
-                  onPressed: () =>
-                      Navigator.of(context).pushNamed(UserProducts.route),
-                  child: const Text(
-                    "View Products",
+                if (Provider.of<AcctDetails>(context).activeUser!.isAdmin)
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(UserProducts.route),
+                    child: const Text(
+                      "View Products",
+                    ),
                   ),
-                ),
-                TextButton.icon(
+                if (Provider.of<AcctDetails>(context).activeUser!.isAdmin)
+                  TextButton.icon(
                     onPressed: () =>
                         Navigator.of(context).pushNamed(UserAccounts.route),
                     icon: const Icon(Icons.account_tree_rounded),
-                    label: const Text("View Users"))
+                    label: const Text("View Users"),
+                  ),
+                TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushReplacementNamed(ProductsPage.route);
+                      details.loginStatus = false;
+                    },
+                    icon: Icon(Icons.logout_rounded),
+                    label: Text("Logout"))
               ],
             ),
     );

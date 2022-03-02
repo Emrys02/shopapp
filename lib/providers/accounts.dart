@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Acct {
   String id;
@@ -25,7 +28,7 @@ class Acct {
 class AcctDetails with ChangeNotifier {
   bool loginStatus = false;
   bool adminState = false;
-
+  Acct? activeUser;
   final List<Acct> _users = [
     Acct(
       id: DateTime.now().toString(),
@@ -46,19 +49,27 @@ class AcctDetails with ChangeNotifier {
   RegExp emailPattern3 = RegExp(r"[\.]{1}[a-z]{2,3}$");
   RegExp usernamePattern = RegExp(r"[a-zA-Z0-9\_]{3, 20}");
 
-  addUser(Acct user) {
-    _users.add(
-      Acct(
-          lastName: user.lastName,
-          firstName: user.firstName,
-          gender: user.gender,
-          id: DateTime.now().toString(),
-          isAdmin: user.isAdmin,
-          password: user.password,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          username: user.username),
-    );
+  addUser(Acct user) async {
+    var url = Uri.parse(
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts.json");
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'email': user.email,
+            "firstName": user.firstName,
+            "gender": user.gender,
+            "lastName": user.lastName,
+            "isAdmin": user.isAdmin,
+            "password": user.password,
+            "phoneNumber": user.phoneNumber,
+            "username": user.username,
+          }));
+    } catch (error) {
+      print(error);
+      rethrow;
+    } finally {
+      _users.add(user);
+    }
     notifyListeners();
   }
 
@@ -75,6 +86,9 @@ class AcctDetails with ChangeNotifier {
     if (_users.any((element) =>
         element.username == user.username &&
         element.password == user.password)) {
+      activeUser = (_users.firstWhere((element) =>
+          element.username == user.username &&
+          element.password == user.password));
       loginStatus = true;
       notifyListeners();
       return true;
@@ -84,7 +98,43 @@ class AcctDetails with ChangeNotifier {
   }
 
   void toggleAdmin(Acct user) {
-    user.isAdmin = !user.isAdmin;
-    notifyListeners();
+    var url = Uri.parse(
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts/${user.id}.json");
+    try {
+      http.patch(url, body: json.encode({'isAdmin': !user.isAdmin}));
+    } catch (error) {
+      print(error);
+      rethrow;
+    } finally {
+      user.isAdmin = !user.isAdmin;
+      notifyListeners();
+    }
+  }
+
+  Future<void> retrieveUsers() async {
+    var url = Uri.parse(
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts.json");
+    try {
+      final out = await http.get(url);
+      final data = json.decode(out.body);
+      _users.clear();
+      data.forEach((id, value) {
+        _users.add(Acct(
+          id: id,
+          email: value["email"],
+          firstName: value['firstName'],
+          gender: value['gender'],
+          isAdmin: value['isAdmin'],
+          lastName: value['lastName'],
+          password: value['password'],
+          phoneNumber: value["phoneNumber"],
+          username: value["username"],
+        ));
+      });
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      rethrow;
+    }
   }
 }

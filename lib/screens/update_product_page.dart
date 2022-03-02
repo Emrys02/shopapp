@@ -15,7 +15,7 @@ class UpdateProduct extends StatefulWidget {
 class _UpdateProductState extends State<UpdateProduct> {
   final priceFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
-  final imageController = TextEditingController();
+  late var imageController;
   final imageFocusNode = FocusNode();
   final formData = GlobalKey<FormState>();
   var isLoading = false;
@@ -82,33 +82,34 @@ class _UpdateProductState extends State<UpdateProduct> {
       setState(() {
         existingItem = ModalRoute.of(context)!.settings.arguments as Product;
         newItem = existingItem;
+        imageController = TextEditingController(text: existingItem.imageUrl);
       });
     }
     super.didChangeDependencies();
   }
 
-  saveProduct() {
+  saveProduct() async {
     if (formData.currentState!.validate()) {
       setState(() {
         isLoading = true;
       });
       formData.currentState!.save();
-      Provider.of<ProductData>(context, listen: false)
-          .editProduct(existingItem, newItem);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Successfully Edited "),
+      try {
+        await Provider.of<ProductData>(context, listen: false)
+            .editProduct(existingItem, newItem);
+      } catch (error) {
+        print(error);
+        Navigator.of(context).pop();
+      } finally {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Successfully edited ${existingItem.title}"),
           backgroundColor: Colors.green,
-          duration: const Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
-          elevation: 2,
-          dismissDirection: DismissDirection.horizontal,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          margin: const EdgeInsets.all(10),
-        ),
-      );
-      Navigator.of(context).pop();
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ));
+        Navigator.of(context).pop();
+      }
     } else {
       return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
