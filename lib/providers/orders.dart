@@ -89,7 +89,7 @@ class Orders with ChangeNotifier {
           time: DateTime.parse(value["time"]),
         );
         print(ask.products);
-        _orders.add(ask);
+        _orders.insert(0,ask);
       });
     } catch (error) {
       print(error);
