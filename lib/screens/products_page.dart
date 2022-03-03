@@ -14,31 +14,25 @@ class ProductsPage extends StatefulWidget {
 bool isLoading = false;
 
 class _ProductsPageState extends State<ProductsPage> {
-  @override
-  void initState() {
-    Future.delayed(Duration.zero, () async {
-      try {
-        setState(() {
-          isLoading = true;
-        });
-        await Provider.of<ProductData>(context, listen: false)
-            .retrieveProduct();
-      } catch (error) {
-        print(error);
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
+  // @override
+  // void initState() {
+  //   Future.delayed(Duration.zero, () async {
+  //     try {
+  //       setState(() {
+  //         isLoading = true;
+  //       });
+  //       await
+  //     } catch (error) {
+  //       print(error);
+  //     } finally {
+  //       setState(() {
+  //         isLoading = false;
+  //       });
+  //     }
+  //   });
 
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +47,26 @@ class _ProductsPageState extends State<ProductsPage> {
         actions: [NavMenu()],
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ProductsGrid(showFavourites as bool),
+      body: FutureBuilder(
+        future:
+            Provider.of<ProductData>(context, listen: false).retrieveProduct(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return RefreshIndicator(
+              onRefresh: () => Provider.of<ProductData>(context, listen: false)
+                  .retrieveProduct(),
+              child: const Center(
+                child: Text(
+                    "something went wrong while retrieving products\n Pull down to refresh"),
+              ),
+            );
+          } else {
+            return ProductsGrid(showFavourites as bool);
+          }
+        },
+      ),
     );
   }
 }
