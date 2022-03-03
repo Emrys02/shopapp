@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
+import '../providers/accounts.dart';
 import '../providers/cart.dart';
 import '../providers/global_variables.dart';
 import '../providers/orders.dart';
@@ -9,15 +9,23 @@ import '../providers/products_data.dart';
 import '../widget/nav_menu.dart';
 import 'product_details.dart';
 
-class CartPage extends StatelessWidget {
-  final bool showFavourites = false;
+class CartPage extends StatefulWidget {
   static const route = 'cartpage';
+
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  final bool showFavourites = false;
 
   @override
   Widget build(BuildContext context) {
     final individualItem = Provider.of<ProductData>(context);
+    bool isLoading = false;
     Cart stuff = Provider.of<Cart>(context);
     Orders order = Provider.of<Orders>(context, listen: false);
+    AcctDetails acctDetails = Provider.of<AcctDetails>(context, listen: false);
     List<CartItem> needed = stuff.items.values.toList();
     return Scaffold(
       appBar: AppBar(
@@ -100,19 +108,39 @@ class CartPage extends StatelessWidget {
                     backgroundColor: Theme.of(context).accentColor,
                   ),
                   TextButton.icon(
-                      onPressed: (() {
-                        order.addOrder(
-                            stuff.items.values.toList(), stuff.totalAmount);
-                        stuff.clearCart();
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text("Successfully CheckedOut Item"),
-                          action: SnackBarAction(
-                              label: "Undo",
-                              onPressed: () => order.removeLastOrder()),
-                        ));
-                      }),
+                      onPressed: stuff.itemCount > 0
+                          ? () async {
+                              if (acctDetails.loginStatus) {
+                                try {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  await order.addOrder(
+                                      stuff.items.values.toList(),
+                                      stuff.totalAmount,
+                                      Provider.of<AcctDetails>(context,
+                                              listen: false)
+                                          .activeUser!
+                                          .id);
+                                } catch (_) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      snackbarError("Could not add to cart"));
+                                } finally {
+                                  stuff.clearCart();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      snackBarGood(
+                                          "Successfully Checked Out Item"));
+                                  isLoading = false;
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    snackbarError(
+                                        "You have not signed in yet"));
+                              }
+                            }
+                          : null,
                       icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text("Checkout"))
+                      label: isLoading ?const CircularProgressIndicator(): const Text("Checkout"))
                 ],
               ),
             ),

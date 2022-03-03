@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class CartItem with ChangeNotifier {
   final String id;
@@ -12,6 +12,19 @@ class CartItem with ChangeNotifier {
     required this.quantity,
     required this.title,
   });
+
+  CartItem.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        quantity = json['quantity'],
+        price = json['price'];
+
+  static Map<String, dynamic> toJson(CartItem item) => {
+        "id": item.id,
+        "title": item.title,
+        'price': item.price,
+        'quantity': item.quantity
+      };
 }
 
 class Cart with ChangeNotifier {
@@ -39,8 +52,7 @@ class Cart with ChangeNotifier {
               price: value.price,
               quantity: value.quantity - 1,
               title: value.title));
-    }
-    else if(_items[itemId]!.quantity == 1){
+    } else if (_items[itemId]!.quantity == 1) {
       _items.remove(itemId);
     }
     notifyListeners();

@@ -11,15 +11,32 @@ class ProductsPage extends StatefulWidget {
   State<ProductsPage> createState() => _ProductsPageState();
 }
 
-bool restart = true;
+bool isLoading = false;
 
 class _ProductsPageState extends State<ProductsPage> {
   @override
+  void initState() {
+    Future.delayed(Duration.zero, () async {
+      try {
+        setState(() {
+          isLoading = true;
+        });
+        await Provider.of<ProductData>(context, listen: false)
+            .retrieveProduct();
+      } catch (error) {
+        print(error);
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
-    if (restart) {
-      Provider.of<ProductData>(context).retrieveProduct();
-    }
-    restart = false;
     super.didChangeDependencies();
   }
 
@@ -36,7 +53,9 @@ class _ProductsPageState extends State<ProductsPage> {
         actions: [NavMenu()],
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: ProductsGrid(showFavourites as bool),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ProductsGrid(showFavourites as bool),
     );
   }
 }

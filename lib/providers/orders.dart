@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shopapp/providers/cart.dart';
+import 'package:http/http.dart' as http;
 
 class OrderItem {
   final String id;
@@ -15,25 +18,81 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final List<OrderItem> _orders = [];
+  List<OrderItem> _orders = [];
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
-  addOrder(List<CartItem> cartProducts, double total) {
-    _orders.insert(
-        0,
-        OrderItem(
-            amount: total,
-            id: DateTime.now().toString(),
-            products: cartProducts,
-            time: DateTime.now()));
-    notifyListeners();
+  addOrder(List<CartItem> cartProducts, double total, String id) async {
+    try {
+      var url = Uri.parse(
+          "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/orders.json");
+      var time = DateTime.now();
+      var body = cartProducts
+          .map((e) => {
+                "title": e.title,
+                "price": e.price,
+                "quantity": e.quantity,
+                "id": e.id
+              })
+          .toList();
+      var response = await http.post(url,
+          body: json.encode({
+            "id": id,
+            "amount": total,
+            "products": body,
+            "time": time.toIso8601String(),
+          }));
+      _orders.insert(
+          0,
+          OrderItem(
+              amount: total,
+              id: json.decode(response.body)["name"],
+              products: cartProducts,
+              time: DateTime.now()));
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      rethrow;
+    } finally {}
   }
 
   removeLastOrder() {
     _orders.removeAt(0);
     notifyListeners();
+  }
+
+  Future<void> retrieveOrders() async {
+    var url = Uri.parse(
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/orders.json");
+    try {
+      final out = await http.get(url);
+      final data = json.decode(out.body);
+      _orders.clear();
+      data.forEach((key, value) {
+        var ask = OrderItem(
+          amount: value["amount"],
+          id: key,
+          products: (value["products"] as List).map((e) {
+            var item = CartItem(
+                id: e["id"],
+                price: e["price"],
+                quantity: e["quantity"],
+                title: e["title"]);
+            print(item.id);
+            print(item.price);
+            print(item.quantity);
+            print(item.title);
+            return item;
+          }).toList(),
+          time: DateTime.parse(value["time"]),
+        );
+        print(ask.products);
+        _orders.add(ask);
+      });
+    } catch (error) {
+      print(error);
+    } finally {}
   }
 }

@@ -33,19 +33,24 @@ class ProductItem extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               leading: IconButton(
-                onPressed: () {
-                  individualItem.toggleFavouriteStatus();
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 3),
-                      content: const Text("Successfully Marked As Favourite"),
-                      action: SnackBarAction(
-                        label: "Undo",
-                        onPressed: () => individualItem.toggleFavouriteStatus(),
+                onPressed: () async {
+                  try {
+                    await individualItem
+                        .toggleFavouriteStatus(individualItem.id.toString());
+                  } finally {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 3),
+                        content: const Text("Successfully Marked As Favourite"),
+                        action: SnackBarAction(
+                          label: "Undo",
+                          onPressed: () => individualItem.toggleFavouriteStatus(
+                              individualItem.id.toString()),
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
                 icon: Icon(
                     individualItem.isFavourite

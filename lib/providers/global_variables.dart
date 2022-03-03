@@ -1,6 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:shopapp/providers/accounts.dart';
+import 'package:shopapp/providers/cart.dart';
+import 'package:shopapp/providers/orders.dart';
+import 'package:shopapp/providers/product.dart';
+import 'package:shopapp/providers/products_data.dart';
 
 enum FilterOptions {
   account,
@@ -15,9 +20,35 @@ enum GenderOptions {
   female,
 }
 
-class Global {
+class Global extends StatelessWidget {
   static const loadingImage = "assets/images/loading.gif";
   static const emptyImage = "assets/images/empty.gif";
+  static var acctdetailsProviderNoLIstener;
+  static var acctdetailsProviderWithListener;
+  static var ordersProviderNoListener;
+  static var ordersProviderWithListener;
+  static var cartProviderWithListener;
+  static var cartProviderNoListener;
+  static var productProviderWithListener;
+  static var productProviderNoListener;
+  static var productdataProviderWithLisener;
+  static var productdataProviderNoListener;
+
+  @override
+  Widget build(BuildContext context) {
+    productdataProviderNoListener = Provider.of<ProductData>(context, listen: false);
+    productdataProviderWithLisener = Provider.of<ProductData>(context);
+    productProviderNoListener = Provider.of<Product>(context, listen: false);
+    productProviderWithListener = Provider.of<Product>(context);
+    cartProviderWithListener = Provider.of<Cart>(context);
+    cartProviderNoListener = Provider.of<Cart>(context, listen: false);
+    ordersProviderWithListener = Provider.of<Orders>(context);
+    ordersProviderNoListener = Provider.of<Orders>(context, listen: false);
+    acctdetailsProviderNoLIstener =
+        Provider.of<AcctDetails>(context, listen: false);
+    acctdetailsProviderWithListener = Provider.of<AcctDetails>(context);
+    return Container();
+  }
 }
 
 List<FilteringTextInputFormatter> nameInputFilters = [
@@ -129,7 +160,8 @@ SnackBar snackbarError(String text) {
 }
 
 SnackBar snackBarGood(String text) {
-  return SnackBar(content: Text(text),
+  return SnackBar(
+    content: Text(text),
     backgroundColor: Colors.green,
     behavior: SnackBarBehavior.floating,
     dismissDirection: DismissDirection.horizontal,
