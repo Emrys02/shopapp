@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/accounts.dart';
+import '../providers/auth.dart';
 import '../providers/global_variables.dart';
 import '../screens/profile.dart';
 import 'create_account.dart';
@@ -13,16 +14,16 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
   @override
   void didChangeDependencies() async {
     if (!widget.retrieve) {
       try {
-        await Provider.of<AcctDetails>(context, listen: false).retrieveUsers();
+        final authToken = Provider.of<Auth>(context, listen: false).authtoken;
+        await Provider.of<AcctDetails>(context, listen: false).retrieveUsers(authToken);
       } catch (error) {
-        print(error);
-      }finally{
+      } finally {
         widget.retrieve = true;
-        print(Provider.of<AcctDetails>(context, listen: false).accounts());
       }
     }
     super.didChangeDependencies();

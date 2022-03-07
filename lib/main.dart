@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/providers/accounts.dart';
+import 'package:shopapp/providers/auth.dart';
 import 'package:shopapp/providers/orders.dart';
+import 'package:shopapp/screens/auth_screen.dart';
 import 'package:shopapp/screens/available_user_accounts.dart';
 import 'package:shopapp/screens/cart_page.dart';
 import 'package:shopapp/screens/add_new_product_page.dart';
@@ -24,36 +26,42 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ProductData()),
-        ChangeNotifierProvider(create: (context) => Cart()),
-        ChangeNotifierProvider( create: (context) => Orders()),
         ChangeNotifierProvider(
-          create: (context) => AcctDetails(),
-        )
+          create: (context) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, ProductData>(
+            create: (context) => ProductData(""),
+            update: (context, auth, previous) => ProductData(auth.authtoken)),
+        ChangeNotifierProvider(create: (context) => Cart()),
+        ChangeNotifierProvider(create: (context) => Orders()),
+        ChangeNotifierProvider(create: (context) => AcctDetails()),
       ],
-      child: MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-          accentColor: Colors.amberAccent,
-          fontFamily: 'Lato',
-          backgroundColor: Colors.white,
+      child: Consumer<Auth>(
+        builder: (context, auth, child) => MaterialApp(
+          theme: ThemeData(
+            primarySwatch: Colors.green,
+            accentColor: Colors.amberAccent,
+            fontFamily: 'Lato',
+            backgroundColor: Colors.white,
+          ),
+          debugShowCheckedModeBanner: false,
+          home: Scaffold(
+            body: !auth.isAuth ? AuthScreen() : ProductsPage(),
+          ),
+          routes: {
+            ProductsPage.route: (context) => ProductsPage(),
+            ProductDetails.route: (context) => ProductDetails(),
+            CartPage.route: (context) => CartPage(),
+            OrdersPage.route: (context) => OrdersPage(),
+            Profile.route: (context) => Profile(),
+            UserProducts.route: (context) => UserProducts(),
+            AddNewProductPage.route: (context) => AddNewProductPage(),
+            CreateAccount.route: (context) => CreateAccount(),
+            UpdateProduct.route: (context) => UpdateProduct(),
+            UserAccounts.route: (context) => UserAccounts(),
+            AuthScreen.route: (context) => AuthScreen(),
+          },
         ),
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: ProductsPage(),
-        ),
-        routes: {
-          ProductsPage.route: (context) => ProductsPage(),
-          ProductDetails.route: (context) => ProductDetails(),
-          CartPage.route: (context) => CartPage(),
-          OrdersPage.route: (context) => OrdersPage(),
-          Profile.route: (context) => Profile(),
-          UserProducts.route: (context) => UserProducts(),
-          AddNewProductPage.route: (context) => AddNewProductPage(),
-          CreateAccount.route: (context) => CreateAccount(),
-          UpdateProduct.route: (context) => UpdateProduct(),
-          UserAccounts.route: (context) => UserAccounts(),
-        },
       ),
     );
   }

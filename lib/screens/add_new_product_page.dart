@@ -70,7 +70,6 @@ class _AddNewProductPageState extends State<AddNewProductPage> {
       try {
         await Provider.of<ProductData>(context, listen: false).addProduct(newItem);
       } catch (error) {
-        print(error);
         Navigator.of(context).pop();
       } finally {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/providers/auth.dart';
 
 import '../providers/cart.dart';
 import '../providers/product.dart';
@@ -11,6 +12,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final individualItem = Provider.of<Product>(context);
     final cart = Provider.of<Cart>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
     return Consumer(
       builder: (BuildContext context, value, Widget? child) => GestureDetector(
         onTap: () {
@@ -36,20 +38,25 @@ class ProductItem extends StatelessWidget {
                 onPressed: () async {
                   try {
                     await individualItem
-                        .toggleFavouriteStatus(individualItem.id.toString());
+                        .toggleFavouriteStatus(individualItem.id.toString(), auth.authtoken, auth.userID);
                   } finally {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 3),
-                        content: const Text("Successfully Marked As Favourite"),
-                        action: SnackBarAction(
-                          label: "Undo",
-                          onPressed: () => individualItem.toggleFavouriteStatus(
-                              individualItem.id.toString()),
-                        ),
-                      ),
-                    );
+                    individualItem.isFavourite
+                        ? ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 3),
+                              content: const Text(
+                                  "Successfully Marked As Favourite"),
+                              action: SnackBarAction(
+                                label: "Undo",
+                                onPressed: () =>
+                                    individualItem.toggleFavouriteStatus(
+                                        individualItem.id.toString(), auth.authtoken, auth.userID),
+                              ),
+                            ),
+                          )
+                        : ScaffoldMessenger.of(context).showSnackBar(snackBarGood(
+                            "${individualItem.title} is no longer a favourite"));
                   }
                 },
                 icon: Icon(

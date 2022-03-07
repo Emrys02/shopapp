@@ -98,7 +98,6 @@ class _UpdateProductState extends State<UpdateProduct> {
         await Provider.of<ProductData>(context, listen: false)
             .editProduct(existingItem, newItem);
       } catch (error) {
-        print(error);
         Navigator.of(context).pop();
       } finally {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

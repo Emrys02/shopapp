@@ -46,8 +46,8 @@ class Profile extends StatelessWidget {
                           .pushReplacementNamed(ProductsPage.route);
                       details.loginStatus = false;
                     },
-                    icon: Icon(Icons.logout_rounded),
-                    label: Text("Logout"))
+                    icon: const Icon(Icons.logout_rounded),
+                    label: const Text("Logout"))
               ],
             ),
     );

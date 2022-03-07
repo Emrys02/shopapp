@@ -24,10 +24,10 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  addOrder(List<CartItem> cartProducts, double total, String id) async {
+  addOrder(List<CartItem> cartProducts, double total, String id, String authToken, String userId) async {
     try {
       var url = Uri.parse(
-          "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/orders.json");
+          "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken");
       var time = DateTime.now();
       var body = cartProducts
           .map((e) => {
@@ -63,9 +63,9 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> retrieveOrders() async {
+  Future<void> retrieveOrders(String authToken, String userId) async {
     var url = Uri.parse(
-        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/orders.json");
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken");
     try {
       final out = await http.get(url);
       final data = json.decode(out.body);

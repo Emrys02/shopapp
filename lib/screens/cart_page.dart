@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/accounts.dart';
+import '../providers/auth.dart';
 import '../providers/cart.dart';
 import '../providers/global_variables.dart';
 import '../providers/orders.dart';
@@ -22,6 +23,7 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     final individualItem = Provider.of<ProductData>(context);
+    final auth = Provider.of<Auth>(context);
     bool isLoading = false;
     Cart stuff = Provider.of<Cart>(context);
     Orders order = Provider.of<Orders>(context, listen: false);
@@ -121,7 +123,8 @@ class _CartPageState extends State<CartPage> {
                                       Provider.of<AcctDetails>(context,
                                               listen: false)
                                           .activeUser!
-                                          .id);
+                                          .id,
+                                      auth.authtoken, auth.userID);
                                 } catch (_) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       snackbarError("Could not add to cart"));
@@ -140,7 +143,9 @@ class _CartPageState extends State<CartPage> {
                             }
                           : null,
                       icon: const Icon(Icons.arrow_forward_rounded),
-                      label: isLoading ?const CircularProgressIndicator(): const Text("Checkout"))
+                      label: isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text("Checkout"))
                 ],
               ),
             ),

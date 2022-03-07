@@ -53,7 +53,7 @@ class AcctDetails with ChangeNotifier {
     var url = Uri.parse(
         "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts.json");
     try {
-      final response = await http.post(url,
+      await http.post(url,
           body: json.encode({
             'email': user.email,
             "firstName": user.firstName,
@@ -65,7 +65,6 @@ class AcctDetails with ChangeNotifier {
             "username": user.username,
           }));
     } catch (error) {
-      print(error);
       rethrow;
     } finally {
       _users.add(user);
@@ -97,13 +96,12 @@ class AcctDetails with ChangeNotifier {
     }
   }
 
-  void toggleAdmin(Acct user) {
+  void toggleAdmin(Acct user, String authToken) async{
     var url = Uri.parse(
-        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts/${user.id}.json");
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts/${user.id}.json?auth=$authToken");
     try {
-      http.patch(url, body: json.encode({'isAdmin': !user.isAdmin}));
+      await http.patch(url, body: json.encode({'isAdmin': !user.isAdmin}));
     } catch (error) {
-      print(error);
       rethrow;
     } finally {
       user.isAdmin = !user.isAdmin;
@@ -111,9 +109,9 @@ class AcctDetails with ChangeNotifier {
     }
   }
 
-  Future<void> retrieveUsers() async {
+  Future<void> retrieveUsers(String authToken) async {
     var url = Uri.parse(
-        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts.json");
+        "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts.json?auth=$authToken");
     try {
       final out = await http.get(url);
       final data = json.decode(out.body);
@@ -133,7 +131,6 @@ class AcctDetails with ChangeNotifier {
       });
       notifyListeners();
     } catch (error) {
-      print(error);
       rethrow;
     }
   }

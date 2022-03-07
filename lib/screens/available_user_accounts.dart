@@ -4,6 +4,7 @@ import 'package:shopapp/providers/accounts.dart';
 import 'package:shopapp/providers/global_variables.dart';
 import 'package:shopapp/widget/create_account.dart';
 
+import '../providers/auth.dart';
 import '../widget/nav_menu.dart';
 
 class UserAccounts extends StatelessWidget {
@@ -12,6 +13,7 @@ class UserAccounts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var details = Provider.of<AcctDetails>(context);
+    final authToken = Provider.of<Auth>(context, listen: false).authtoken;
     List<Acct> account = details.accounts();
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +29,7 @@ class UserAccounts extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () =>
-            Provider.of<AcctDetails>(context, listen: false).retrieveUsers(),
+            Provider.of<AcctDetails>(context, listen: false).retrieveUsers(authToken),
         child: ListView.builder(
           itemCount: account.length,
           itemBuilder: (context, index) => ListTile(
@@ -36,7 +38,7 @@ class UserAccounts extends StatelessWidget {
                 Text("${account[index].firstName} ${account[index].lastName}"),
             trailing: IconButton(
               onPressed: () {
-                details.toggleAdmin(account[index]);
+                details.toggleAdmin(account[index], authToken);
 
                 ScaffoldMessenger.of(context).showSnackBar(
                     snackBarGood("Admin status has been changed successfully"));
