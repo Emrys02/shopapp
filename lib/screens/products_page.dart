@@ -14,26 +14,6 @@ class ProductsPage extends StatefulWidget {
 bool isLoading = false;
 
 class _ProductsPageState extends State<ProductsPage> {
-  // @override
-  // void initState() {
-  //   Future.delayed(Duration.zero, () async {
-  //     try {
-  //       setState(() {
-  //         isLoading = true;
-  //       });
-  //       await
-  //     } catch (error) {
-  //       print(error);
-  //     } finally {
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     }
-  //   });
-
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     var showFavourites = ModalRoute.of(context)?.settings.arguments;
@@ -54,8 +34,8 @@ class _ProductsPageState extends State<ProductsPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return RefreshIndicator(
-              onRefresh: () => Provider.of<ProductData>(context, listen: false)
+            return InkWell(
+              onTap: () => Provider.of<ProductData>(context, listen: false)
                   .retrieveProduct(),
               child: const Center(
                 child: Text(

@@ -30,8 +30,8 @@ class Home extends StatelessWidget {
           create: (context) => Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, ProductData>(
-            create: (context) => ProductData(""),
-            update: (context, auth, previous) => ProductData(auth.authtoken)),
+            create: (context) => ProductData("", ""),
+            update: (context, auth, previous) => ProductData(auth.authtoken, auth.userID)),
         ChangeNotifierProvider(create: (context) => Cart()),
         ChangeNotifierProvider(create: (context) => Orders()),
         ChangeNotifierProvider(create: (context) => AcctDetails()),

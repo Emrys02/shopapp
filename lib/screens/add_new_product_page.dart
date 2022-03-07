@@ -20,7 +20,7 @@ class _AddNewProductPageState extends State<AddNewProductPage> {
   var isLoading = false;
   var error = false;
   Product newItem =
-      Product(description: "", id: null, imageUrl: "", price: 0, title: "");
+      Product(description: "", id: "", imageUrl: "", price: 0, title: "");
 
   void updateImage() {
     if (imageFocusNode.hasFocus) {
@@ -73,7 +73,7 @@ class _AddNewProductPageState extends State<AddNewProductPage> {
         Navigator.of(context).pop();
       } finally {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Successfully added new product"),
+          content: const Text("Successfully added new product"),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
           shape:

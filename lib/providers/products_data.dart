@@ -6,8 +6,9 @@ import 'product.dart';
 
 class ProductData with ChangeNotifier {
   final String authToken;
+  final String userId;
 
-  ProductData(this.authToken);
+  ProductData(this.authToken, this.userId);
 
   final List<Product> _items = [];
 
@@ -91,6 +92,12 @@ class ProductData with ChangeNotifier {
     try {
       final out = await http.get(url);
       final data = json.decode(out.body);
+      url = Uri.parse(
+          "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/favourites/$userId.json?auth=$authToken");
+
+      final favourites = await http.get(url);
+      final favouritesData = json.decode(favourites.body);
+
       _items.clear();
       data.forEach((id, value) {
         _items.add(Product(
@@ -98,12 +105,14 @@ class ProductData with ChangeNotifier {
           description: value['description'],
           imageUrl: value['imageUrl'],
           price: value['price'],
+          isFavourite: favouritesData == null || favouritesData[id] == null
+              ? false
+              : true,
           title: value['title'],
         ));
       });
       notifyListeners();
     } catch (error) {
-      print(error);
       rethrow;
     }
   }

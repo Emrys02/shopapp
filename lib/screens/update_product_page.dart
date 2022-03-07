@@ -15,6 +15,7 @@ class UpdateProduct extends StatefulWidget {
 class _UpdateProductState extends State<UpdateProduct> {
   final priceFocusNode = FocusNode();
   final descriptionFocusNode = FocusNode();
+  // ignore: prefer_typing_uninitialized_variables
   late var imageController;
   final imageFocusNode = FocusNode();
   final formData = GlobalKey<FormState>();

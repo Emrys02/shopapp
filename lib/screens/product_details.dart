@@ -53,14 +53,14 @@ class ProductDetails extends StatelessWidget {
                       icon: const Icon(Icons.add_shopping_cart_rounded),
                       label: const Text("Add To Cart"),
                       onPressed: () {
-                        cart.addItem(_selectedItem.id!, _selectedItem.price,
+                        cart.addItem(_selectedItem.id, _selectedItem.price,
                             _selectedItem.title);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: const Text("Successfully Added To Cart"),
                           action: SnackBarAction(
                               label: "Undo",
                               onPressed: () =>
-                                  cart.removeItem(_selectedItem.id!)),
+                                  cart.removeItem(_selectedItem.id)),
                         ));
                       },
                     ),
@@ -71,7 +71,7 @@ class ProductDetails extends StatelessWidget {
                         order.addOrder(
                             [
                               CartItem(
-                                  id: _selectedItem.id!,
+                                  id: _selectedItem.id,
                                   price: _selectedItem.price,
                                   quantity: 1,
                                   title: _selectedItem.title)

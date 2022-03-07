@@ -18,13 +18,14 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  List<OrderItem> _orders = [];
+  final List<OrderItem> _orders = [];
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
-  addOrder(List<CartItem> cartProducts, double total, String id, String authToken, String userId) async {
+  addOrder(List<CartItem> cartProducts, double total, String id,
+      String authToken, String userId) async {
     try {
       var url = Uri.parse(
           "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken");
@@ -53,7 +54,6 @@ class Orders with ChangeNotifier {
               time: DateTime.now()));
       notifyListeners();
     } catch (error) {
-      print(error);
       rethrow;
     } finally {}
   }
@@ -80,19 +80,14 @@ class Orders with ChangeNotifier {
                 price: e["price"],
                 quantity: e["quantity"],
                 title: e["title"]);
-            print(item.id);
-            print(item.price);
-            print(item.quantity);
-            print(item.title);
             return item;
           }).toList(),
           time: DateTime.parse(value["time"]),
         );
-        print(ask.products);
-        _orders.insert(0,ask);
+        _orders.insert(0, ask);
       });
     } catch (error) {
-      print(error);
-    } finally {}
+      rethrow;
+    }
   }
 }
