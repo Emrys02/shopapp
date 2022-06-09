@@ -124,21 +124,27 @@ class _CartPageState extends State<CartPage> {
                                               listen: false)
                                           .activeUser!
                                           .id,
-                                      auth.authtoken, auth.userID);
-                                } catch (_) {
+                                      auth.authtoken,
+                                      auth.userID);
+                                } catch (e) {
+                                  print(e);
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      snackbarError("Could not add to cart"));
-                                } finally {
-                                  stuff.clearCart();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      snackBarGood(
-                                          "Successfully Checked Out Item"));
-                                  isLoading = false;
+                                    snackbarError("Could not add to cart"),
+                                  );
                                 }
+                                stuff.clearCart();
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  snackBarGood("Successfully Checked Out Item"),
+                                );
+                                isLoading = false;
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    snackbarError(
-                                        "You have not signed in yet"));
+                                  snackbarError("You have not signed in yet"),
+                                );
                               }
                             }
                           : null,

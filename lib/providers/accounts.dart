@@ -96,7 +96,7 @@ class AcctDetails with ChangeNotifier {
     }
   }
 
-  void toggleAdmin(Acct user, String authToken) async{
+  void toggleAdmin(Acct user, String authToken) async {
     var url = Uri.parse(
         "https://flutter-shopapp-71dfd-default-rtdb.firebaseio.com/accounts/${user.id}.json?auth=$authToken");
     try {
@@ -116,19 +116,23 @@ class AcctDetails with ChangeNotifier {
       final out = await http.get(url);
       final data = json.decode(out.body);
       _users.clear();
-      data.forEach((id, value) {
-        _users.add(Acct(
-          id: id,
-          email: value["email"],
-          firstName: value['firstName'],
-          gender: value['gender'],
-          isAdmin: value['isAdmin'],
-          lastName: value['lastName'],
-          password: value['password'],
-          phoneNumber: value["phoneNumber"],
-          username: value["username"],
-        ));
-      });
+      data.forEach(
+        (id, value) {
+          _users.add(
+            Acct(
+              id: id,
+              email: value["email"],
+              firstName: value['firstName'],
+              gender: value['gender'],
+              isAdmin: value['isAdmin'],
+              lastName: value['lastName'],
+              password: value['password'],
+              phoneNumber: value["phoneNumber"],
+              username: value["username"],
+            ),
+          );
+        },
+      );
       notifyListeners();
     } catch (error) {
       rethrow;

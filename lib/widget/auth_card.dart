@@ -73,9 +73,9 @@ class _AuthCardState extends State<AuthCard> {
         borderRadius: BorderRadius.circular(10),
       ),
       elevation: 8,
-      child: Container(
-        constraints:
-            BoxConstraints(minHeight: authMode == AuthMode.signup ? 320 : 260),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        height: authMode == AuthMode.signup ? 320 : 260,
         width: 400,
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -124,7 +124,7 @@ class _AuthCardState extends State<AuthCard> {
                       return null;
                     }
                   },
-                  onFieldSubmitted: (_)=>submit(),
+                  onFieldSubmitted: (_) => submit(),
                   onSaved: (_) =>
                       authData['password'] = passwordController.text,
                 ),

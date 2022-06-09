@@ -14,13 +14,13 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   @override
   void didChangeDependencies() async {
     if (!widget.retrieve) {
       try {
         final authToken = Provider.of<Auth>(context, listen: false).authtoken;
-        await Provider.of<AcctDetails>(context, listen: false).retrieveUsers(authToken);
+        await Provider.of<AcctDetails>(context, listen: false)
+            .retrieveUsers(authToken);
       } catch (error) {
       } finally {
         widget.retrieve = true;
@@ -114,9 +114,10 @@ class _LoginState extends State<Login> {
                         FocusScope.of(context).requestFocus(passwordFocusNode),
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'User Name',
-                        hintText: 'Your Username'),
+                      border: OutlineInputBorder(),
+                      labelText: 'User Name',
+                      hintText: 'Your Username',
+                    ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       if (value!.isEmpty) {
